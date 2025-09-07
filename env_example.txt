@@ -1,0 +1,11 @@
+# Exemplo de arquivo .env
+# Copie este arquivo para .env e substitua o token
+
+TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz-1234567890
+
+# Como obter o token:
+# 1. Acesse https://t.me/BotFather no Telegram
+# 2. Digite /newbot
+# 3. Siga as instruções para criar seu bot
+# 4. Copie o token fornecido
+# 5. Substitua o valor acima pelo seu token real
