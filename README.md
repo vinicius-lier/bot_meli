@@ -213,6 +213,30 @@ O bot gera logs detalhados no terminal. Para parar o bot, pressione `Ctrl+C`.
 
 Sinta-se à vontade para contribuir com melhorias, correções de bugs ou novas funcionalidades!
 
+## 🚀 Deploy no Render
+
+Para fazer deploy no Render (recomendado para produção):
+
+### 1. Configuração no Render
+1. Acesse [render.com](https://render.com)
+2. Conecte seu repositório GitHub
+3. Crie um novo **Web Service** ou **Background Worker**
+4. Configure:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python render_main.py`
+   - **Environment**: `Python 3`
+
+### 2. Variáveis de Ambiente
+No painel do Render, adicione:
+- `TELEGRAM_BOT_TOKEN`: Seu token do bot
+
+### 3. Arquivos Específicos para Render
+- `render_main.py`: Versão otimizada para produção
+- `render.yaml`: Configuração automática (opcional)
+
+### 4. Deploy Automático
+O bot será automaticamente deployado quando você fizer push para o repositório.
+
 ## 📄 Licença
 
 Este projeto é de uso livre para fins educacionais e comerciais.

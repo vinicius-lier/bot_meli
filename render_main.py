@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-RoteiroBot - Bot do Telegram para controle de rotas
-Sistema de registro e consulta de rotas com cálculo automático de valores
+RoteiroBot - Versão Otimizada para Render
+Bot do Telegram para controle de rotas com cálculo automático de valores
+Versão simplificada e robusta para deploy em produção
 """
 
 import logging
 import asyncio
 import signal
 import sys
+import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ConversationHandler, MessageHandler, filters
 from telegram.error import Conflict, NetworkError, TimedOut
@@ -26,18 +28,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class RoteiroBot:
-    """Classe principal do RoteiroBot com tratamento robusto de erros"""
+class RenderBot:
+    """Classe do bot otimizada para Render"""
     
     def __init__(self):
         self.application = None
         self.running = False
         self.restart_count = 0
-        self.max_restarts = 5
+        self.max_restarts = 3  # Menos tentativas para Render
         
     async def setup_application(self):
         """Configura a aplicação do bot"""
-        # Cria a aplicação do bot
         self.application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         
         # Handler para o comando /rota (conversa)
@@ -61,24 +62,24 @@ class RoteiroBot:
         self.application.add_handler(CommandHandler("todas", todas_command))
         self.application.add_handler(CommandHandler("deletar", deletar_command))
     
-    async def cleanup_bot_state(self):
-        """Limpa completamente o estado do bot"""
+    async def cleanup_for_render(self):
+        """Limpeza otimizada para Render"""
         try:
-            print("🧹 Limpando estado do bot...")
+            logger.info("Limpando estado do bot para Render...")
             
-            # 1. Remove webhook
+            # Remove webhook
             await self.application.bot.delete_webhook(drop_pending_updates=True)
+            logger.info("Webhook removido")
             
-            # 2. Aguarda um pouco
-            await asyncio.sleep(3)
+            # Aguarda um pouco
+            await asyncio.sleep(2)
             
-            # 3. Limpa updates pendentes de forma mais agressiva
+            # Limpa updates pendentes de forma simples
             try:
-                # Tenta obter updates para limpar a fila
-                updates = await self.application.bot.get_updates(limit=100, timeout=1)
+                updates = await self.application.bot.get_updates(limit=50, timeout=1)
                 if updates:
-                    print(f"📨 Limpando {len(updates)} updates pendentes...")
-                    # Processa todos os updates para limpar a fila
+                    logger.info(f"Limpando {len(updates)} updates pendentes")
+                    # Processa updates para limpar a fila
                     for update in updates:
                         try:
                             await self.application.bot.get_updates(
@@ -91,29 +92,26 @@ class RoteiroBot:
             except Exception as e:
                 logger.warning(f"Erro ao limpar updates: {e}")
             
-            # 4. Aguarda mais um pouco
-            await asyncio.sleep(2)
-            
-            print("✅ Estado do bot limpo com sucesso")
+            await asyncio.sleep(1)
+            logger.info("Limpeza concluída")
             
         except Exception as e:
             logger.warning(f"Erro durante limpeza: {e}")
-
+    
     async def start_bot(self):
-        """Inicia o bot com tratamento robusto de erros"""
+        """Inicia o bot com tratamento robusto para Render"""
         self.running = True
         
         while self.running and self.restart_count < self.max_restarts:
             try:
-                logger.info("Iniciando RoteiroBot...")
+                logger.info("Iniciando RoteiroBot no Render...")
                 print("🚛 RoteiroBot iniciado com sucesso!")
                 print("📱 Bot está online e pronto para receber comandos")
-                print("🛑 Pressione Ctrl+C para parar o bot")
                 
-                # Limpeza completa do estado antes de iniciar
-                await self.cleanup_bot_state()
+                # Limpeza antes de iniciar
+                await self.cleanup_for_render()
                 
-                # Inicia o polling com configurações otimizadas
+                # Inicia o polling com configurações básicas
                 await self.application.run_polling(
                     allowed_updates=Update.ALL_TYPES,
                     drop_pending_updates=True,
@@ -122,53 +120,44 @@ class RoteiroBot:
                 
             except Conflict as e:
                 logger.error(f"Conflito detectado: {e}")
-                print(f"⚠️ Conflito detectado: Múltiplas instâncias do bot detectadas")
-                print("🔄 Tentando resolver conflito com limpeza agressiva...")
+                print(f"⚠️ Conflito detectado - resolvendo...")
                 
-                # Limpeza agressiva do estado
-                await self.cleanup_bot_state()
+                # Limpeza agressiva
+                await self.cleanup_for_render()
                 
                 self.restart_count += 1
                 if self.restart_count < self.max_restarts:
-                    wait_time = min(10 * self.restart_count, 60)  # Backoff mais longo
-                    print(f"⏳ Aguardando {wait_time} segundos antes de tentar novamente...")
+                    wait_time = 5 * self.restart_count
+                    logger.info(f"Aguardando {wait_time} segundos...")
                     await asyncio.sleep(wait_time)
                 else:
-                    print("❌ Máximo de tentativas de reinicialização atingido")
-                    print("💡 Execute 'python fix_conflict.py' para limpeza manual")
+                    logger.error("Máximo de tentativas atingido")
                     break
                     
             except (NetworkError, TimedOut) as e:
                 logger.error(f"Erro de rede: {e}")
-                print(f"🌐 Erro de rede: {e}")
-                print("🔄 Tentando reconectar...")
+                print(f"🌐 Erro de rede - tentando reconectar...")
                 
                 self.restart_count += 1
                 if self.restart_count < self.max_restarts:
-                    wait_time = min(10 * self.restart_count, 60)
-                    print(f"⏳ Aguardando {wait_time} segundos...")
+                    wait_time = 10 * self.restart_count
+                    logger.info(f"Aguardando {wait_time} segundos...")
                     await asyncio.sleep(wait_time)
                 else:
-                    print("❌ Máximo de tentativas de reconexão atingido")
+                    logger.error("Máximo de tentativas de reconexão atingido")
                     break
                     
-            except KeyboardInterrupt:
-                logger.info("Bot interrompido pelo usuário")
-                print("\n🛑 Bot interrompido pelo usuário")
-                self.running = False
-                break
-                
             except Exception as e:
                 logger.error(f"Erro inesperado: {e}")
                 print(f"❌ Erro inesperado: {e}")
                 
                 self.restart_count += 1
                 if self.restart_count < self.max_restarts:
-                    wait_time = min(5 * self.restart_count, 30)
-                    print(f"🔄 Tentando reiniciar em {wait_time} segundos...")
+                    wait_time = 5 * self.restart_count
+                    logger.info(f"Tentando reiniciar em {wait_time} segundos...")
                     await asyncio.sleep(wait_time)
                 else:
-                    print("❌ Máximo de tentativas de reinicialização atingido")
+                    logger.error("Máximo de tentativas de reinicialização atingido")
                     break
     
     async def stop_bot(self):
@@ -180,11 +169,11 @@ class RoteiroBot:
 
 def signal_handler(signum, frame):
     """Handler para sinais do sistema"""
-    print(f"\n🛑 Sinal {signum} recebido. Parando o bot...")
+    logger.info(f"Sinal {signum} recebido. Parando o bot...")
     sys.exit(0)
 
 async def main():
-    """Função principal que inicia o bot"""
+    """Função principal otimizada para Render"""
     
     # Configura handlers de sinal
     signal.signal(signal.SIGINT, signal_handler)
@@ -194,8 +183,6 @@ async def main():
     if not TELEGRAM_BOT_TOKEN:
         logger.error("Token do Telegram não configurado!")
         print("❌ ERRO: Token do Telegram não encontrado!")
-        print("📝 Crie um arquivo .env com: TELEGRAM_BOT_TOKEN=seu_token_aqui")
-        print("🔗 Obtenha seu token em: https://t.me/BotFather")
         return
     
     # Inicializa o banco de dados
@@ -208,7 +195,7 @@ async def main():
         return
     
     # Cria e inicia o bot
-    bot = RoteiroBot()
+    bot = RenderBot()
     await bot.setup_application()
     await bot.start_bot()
     await bot.stop_bot()
