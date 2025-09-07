@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🚛 RoteiroBot
 
 Bot do Telegram para controle de rotas com cálculo automático de valores.
@@ -161,3 +162,6 @@ Sinta-se à vontade para contribuir com melhorias, correções de bugs ou novas 
 ## 📄 Licença
 
 Este projeto é de uso livre para fins educacionais e comerciais.
+=======
+# bot_meli
+>>>>>>> 3d86cf3eb756a6dac1e2e9de52bedee5ef128976
