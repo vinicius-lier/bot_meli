@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🚛 RoteiroBot
 
 Bot do Telegram para controle de rotas com cálculo automático de valores.
@@ -53,6 +52,18 @@ Bot do Telegram para controle de rotas com cálculo automático de valores.
 
 ### 4. Executar o Bot
 
+**🚀 MÉTODO DEFINITIVO (Recomendado):**
+```bash
+python run_bot.py
+```
+*Este método inclui limpeza automática de conflitos e inicialização robusta*
+
+**Método Alternativo (Inicialização Segura):**
+```bash
+python start_bot.py
+```
+
+**Método Básico:**
 ```bash
 python main.py
 ```
@@ -126,16 +137,48 @@ CREATE TABLE rotas (
 
 ```
 RoteiroBot/
-├── main.py              # Arquivo principal do bot
+├── run_bot.py           # 🚀 Script de execução definitivo (RECOMENDADO)
+├── main.py              # Arquivo principal do bot (versão robusta)
+├── start_bot.py         # Script de inicialização segura
+├── fix_conflict.py      # Script para resolver conflitos
+├── monitor_bot.py       # Monitor de saúde contínuo
 ├── db.py                # Funções de banco de dados
 ├── handlers.py          # Handlers dos comandos
 ├── config.py            # Configurações e variáveis de ambiente
 ├── requirements.txt     # Dependências do projeto
 ├── README.md           # Este arquivo
+├── .env                # Arquivo de configuração (criar manualmente)
 └── rotas.db            # Banco de dados (criado automaticamente)
 ```
 
 ## 🔧 Solução de Problemas
+
+### ❌ Erro: "Conflict: terminated by other getUpdates request"
+
+Este é o erro mais comum e indica múltiplas instâncias do bot rodando simultaneamente.
+
+**🚀 Solução Definitiva (Recomendada):**
+```bash
+python run_bot.py
+```
+*Este script resolve conflitos automaticamente antes de iniciar*
+
+**Solução Rápida:**
+```bash
+python fix_conflict.py
+```
+
+**Solução Manual:**
+1. Pare todas as instâncias do bot (Ctrl+C em todos os terminais)
+2. Execute: `python fix_conflict.py`
+3. Escolha a opção "1" para resolver conflitos
+4. Inicie o bot novamente: `python run_bot.py`
+
+**Monitoramento Contínuo:**
+```bash
+python monitor_bot.py
+```
+*Para monitorar a saúde do bot em tempo real*
 
 ### Erro: "Token do Telegram não encontrado"
 - Verifique se o arquivo `.env` existe
@@ -151,6 +194,17 @@ RoteiroBot/
 - Confirme se o token está correto
 - Teste enviando `/start` para o bot
 
+### Bot reinicia constantemente
+- Use `python run_bot.py` (método definitivo)
+- Execute `python fix_conflict.py` para limpar conflitos
+- Use `python monitor_bot.py` para monitorar em tempo real
+- Verifique sua conexão com a internet
+
+### Bot não inicia após conflito
+- Execute `python fix_conflict.py` e escolha opção "1"
+- Aguarde 30 segundos antes de tentar novamente
+- Use `python run_bot.py` para inicialização robusta
+
 ## 📝 Logs
 
 O bot gera logs detalhados no terminal. Para parar o bot, pressione `Ctrl+C`.
@@ -162,6 +216,3 @@ Sinta-se à vontade para contribuir com melhorias, correções de bugs ou novas 
 ## 📄 Licença
 
 Este projeto é de uso livre para fins educacionais e comerciais.
-=======
-# bot_meli
->>>>>>> 3d86cf3eb756a6dac1e2e9de52bedee5ef128976
