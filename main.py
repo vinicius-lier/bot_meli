@@ -78,7 +78,8 @@ def main():
         # Inicia o polling
         application.run_polling(
             allowed_updates=Update.ALL_TYPES,
-            drop_pending_updates=True
+            drop_pending_updates=True,
+            close_loop=False
         )
     except KeyboardInterrupt:
         logger.info("Bot interrompido pelo usuário")
@@ -86,6 +87,11 @@ def main():
     except Exception as e:
         logger.error(f"Erro inesperado: {e}")
         print(f"❌ Erro inesperado: {e}")
+        # Tenta reiniciar o bot após 5 segundos
+        import time
+        print("🔄 Tentando reiniciar o bot em 5 segundos...")
+        time.sleep(5)
+        main()
 
 if __name__ == '__main__':
     main()
